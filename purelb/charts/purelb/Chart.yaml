@@ -1,0 +1,17 @@
+apiVersion: v2
+appVersion: v0.11.0
+description: PureLB is a Kubernetes load-balancer controller that uses standard Linux
+  networking and routing protocols.
+keywords:
+- load-balancer
+- balancer
+- lb
+- bgp
+- arp
+- vrrp
+- vip
+name: purelb
+sources:
+- https://gitlab.com/purelb/purelb
+type: application
+version: v0.11.0

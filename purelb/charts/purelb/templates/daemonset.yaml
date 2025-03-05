@@ -1,0 +1,87 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    {{- include "purelb.labels" . | nindent 4 }}
+    app.kubernetes.io/component: lbnodeagent
+  name: lbnodeagent
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "purelb.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: lbnodeagent
+  template:
+    metadata:
+      annotations:
+        prometheus.io/port: '7472'
+        prometheus.io/scrape: 'true'
+      labels:
+        {{- include "purelb.labels" . | nindent 8 }}
+        app.kubernetes.io/component: lbnodeagent
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+      {{- if .Values.lbnodeagent.securityContext }}
+      securityContext:
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+      containers:
+      - name: lbnodeagent
+        command: ["/usr/local/bin/lbnodeagent"]
+        env:
+        - name: NETBOX_USER_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: netbox-client
+              key: user-token
+              optional: true
+        - name: DEFAULT_ANNOUNCER
+          value: "{{ .Values.defaultAnnouncer }}"
+        - name: PURELB_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: PURELB_HOST
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: PURELB_ML_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: PURELB_ML_LABELS
+          value: "{{- include "purelb.memberlistLabels" . }}"
+        - name: ML_GROUP
+          value: "{{ .Values.memberlistSecretKey }}"
+        image: "{{ .Values.image.repository }}/purelb:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: 7472
+          name: monitoring
+        resources:
+          {{- with .Values.lbnodeagent.resources }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
+        {{- with .Values.lbnodeagent.containerSecurityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+      hostNetwork: true
+      nodeSelector:
+        kubernetes.io/os: linux
+        {{- with .Values.lbnodeagent.nodeSelector }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      serviceAccountName: lbnodeagent
+      terminationGracePeriodSeconds: 2
+      {{- if .Values.priorityClassName }}
+      priorityClassName: {{ .Values.priorityClassName }}
+      {{- end }}
+      {{- with .Values.lbnodeagent.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
