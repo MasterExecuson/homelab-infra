@@ -1,0 +1,6 @@
+machine:
+  kubelet:
+    nodeIP:
+      validSubnets:
+        - 10.8.8.0/24
+

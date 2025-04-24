@@ -1,0 +1,7 @@
+# patches/disable-kube-proxy-and-cni.yaml
+cluster:
+  network:
+    cni:
+      name: none
+  proxy:
+    disabled: true

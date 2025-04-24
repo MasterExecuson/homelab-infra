@@ -1,0 +1,10 @@
+machine:
+  kubelet:
+    nodeIP:
+      validSubnets:
+        - 10.8.8.0/24
+
+cluster:
+  etcd:
+    advertisedSubnets:
+      - 10.8.8.0/24
