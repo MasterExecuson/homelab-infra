@@ -3,7 +3,7 @@ kind: Kustomization
 
 resources:
   - cilium
-  - cloudflared
+#  - cloudflared moved to DMZ, run as container
   - cert-manager
   - purelb
   - ingress-nginx
