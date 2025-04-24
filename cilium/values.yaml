@@ -20,3 +20,5 @@ gatewayAPI:
   enabled: true
   enableAlpn: true
   enableAppProtocol: true
+
+# Pending update DNS to 192.168.1.22 to make cloudflare work... Default dns was not working properly.

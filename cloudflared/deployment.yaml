@@ -4,6 +4,7 @@ metadata:
   labels:
     app: cloudflared
   name: cloudflared-deployment
+  namespace: cloudflared
 spec:
   replicas: 2
   selector:
