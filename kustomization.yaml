@@ -3,7 +3,9 @@ kind: Kustomization
 
 resources:
   - cilium
-#  - cloudflared moved to DMZ, run as container
+#  - cloudflared #moved to DMZ, run as container
   - cert-manager
   - purelb
-  - ingress-nginx
+  - gateway-api
+  - istio-system
+  - istio-ingress
