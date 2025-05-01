@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: gotify
+  name: gotify-deployment
+  namespace: gotify
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gotify
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: gotify
+    spec:
+      containers:
+        - image: gotify/server:latest
+          name: gotify
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/gotify
+            - name: tls-cert
+              mountPath: /etc/certs
+          env:
+            - name: GOTIFY_DEFAULTUSER_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: gotify-pass
+                  key: pass
+            - name: GOTIFY_SERVER_SSL_CERTFILE
+              value: /etc/certs/tls.crt
+            - name: GOTIFY_SERVER_SSL_CERTKEY
+              value: /etc/certs/tls.key
+      volumes:
+        - name: config-volume
+          configMap:
+            name: gotify-config
+        - name: tls-cert
+          secret:
+            secretName: gotify-cert
