@@ -1,0 +1,32 @@
+couchdbConfig:
+  couchdb:
+    uuid: bf736e1d-d6fb-443a-91c8-571bf80d68f5
+    max_document_size: "50000000"
+    single_node: "true"
+  chttpd:
+    bind_address: "0.0.0.0"
+    require_valid_user_except_for_up: "true"
+    enable_cors: "true"
+    max_http_request_size: "4294967296"
+  chttpd_auth:
+    require_valid_user_except_for_up: "true"
+  httpd:
+    enable_cors: "true"
+    WWW-Authenticate: "Basic realm=\"couchdb\""
+  cors:
+    credentials: "true"
+    origins: "app://obsidian.md,capacitor://localhost,http://localhost"
+persistentVolume:
+  enabled: false
+clusterSize: 1
+createAdminSecret: false
+autoSetup:
+  enabled: false
+  image:
+    repository: curlimages/curl
+    tag: latest
+    pullPolicy: Always
+  defaultDatabases:
+    - _global_changes
+    - _users
+    - _replicator

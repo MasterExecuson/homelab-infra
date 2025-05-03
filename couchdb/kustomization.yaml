@@ -1,0 +1,56 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - namespace.yaml
+  - gateway.yaml
+
+
+
+helmCharts:
+  - name: couchdb
+    namespace: couchdb
+    releaseName: couchdb
+    valuesFile: values.yaml
+    includeCRDs: true
+
+
+patches:
+  - target:
+      kind: Namespace
+    patch: |-
+      - op: add 
+        path: /metadata/labels
+        value: 
+            pod-security.kubernetes.io/audit: privileged
+            pod-security.kubernetes.io/enforce: privileged
+            pod-security.kubernetes.io/enforce-version: latest
+            pod-security.kubernetes.io/warn: privileged
+#  - target:
+#      kind: StatefulSet
+#    patch: |-
+#      - op: add        couchdb-couchdb-0ontainers/1
+#        value:
+#            command:
+#            - sh
+#            - -c
+#            - |
+#              touch /healthy && echo "-- Configuring CouchDB by REST APIs... -->" && until (curl --fail -X POST -s -w "%{http_code}\n" "couchdb-couchdb-0.couchdb-couchdb.couchdb.svc.cluster.local:5984/_cluster_setup" -H "Content-Type: application/json" -d "{\"action\":\"enable_single_node\",\"username\":\"${username}\",\"password\":\"${password}\",\"bind_address\":\"0.0.0.0\",\"port\":5984,\"singlenode\":true}" --user "${username}:${password}"); do sleep 5; done && until (curl -s -X PUT "couchdb-couchdb-0.couchdb-couchdb.couchdb.svc.cluster.local:5984/_node/couchdb@couchdb-couchdb-0.couchdb-couchdb.couchdb.svc.cluster.local/_config/chttpd/require_valid_user_except_for_up" -H "Content-Type: application/json" -d '"true"' --user "${username}:${password}"); do sleep 5; done && until (curl -s -X PUT "couchdb-couchdb-0.couchdb-couchdb.couchdb.svc.cluster.local:5984/_node/couchdb@couchdb-couchdb-0.couchdb-couchdb.couchdb.svc.cluster.local/_config/chttpd_auth/require_valid_user_except_for_up" -H "Content-Type: application/json" -d '"true"' --user "${username}:${password}"); do sleep 5; done && until (curl -s -X PUT "couchdb-couchdb-0.couchdb-couchdb.couchdb.svc.cluster.local:5984/_node/couchdb@couchdb-couchdb-0.couchdb-couchdb.couchdb.svc.cluster.local/_config/httpd/WWW-Authenticate" -H "Content-Type: application/json" -d '"Basic realm=\"couchdb\""' --user "${username}:${password}"); do sleep 5; done && until (curl -s -X PUT "couchdb-couchdb-0.couchdb-couchdb.couchdb.svc.cluster.local:5984/_node/couchdb@couchdb-couchdb-0.couchdb-couchdb.couchdb.svc.cluster.local/_config/httpd/enable_cors" -H "Content-Type: application/json" -d '"true"' --user "${username}:${password}"); do sleep 5; done && until (curl -s -X PUT "couchdb-couchdb-0.couchdb-couchdb.couchdb.svc.cluster.local:5984/_node/couchdb@couchdb-couchdb-0.couchdb-couchdb.couchdb.svc.cluster.local/_config/chttpd/enable_cors" -H "Content-Type: application/json" -d '"true"' --user "${username}:${password}"); do sleep 5; done && until (curl -s -X PUT "couchdb-couchdb-0.couchdb-couchdb.couchdb.svc.cluster.local:5984/_node/couchdb@couchdb-couchdb-0.couchdb-couchdb.couchdb.svc.cluster.local/_config/chttpd/max_http_request_size" -H "Content-Type: application/json" -d '"4294967296"' --user "${username}:${password}"); do sleep 5; done && until (curl -s -X PUT "couchdb-couchdb-0.couchdb-couchdb.couchdb.svc.cluster.local:5984/_node/couchdb@couchdb-couchdb-0.couchdb-couchdb.couchdb.svc.cluster.local/_config/couchdb/max_document_size" -H "Content-Type: application/json" -d '"50000000"' --user "${username}:${password}"); do sleep 5; done && until (curl -s -X PUT "couchdb-couchdb-0.couchdb-couchdb.couchdb.svc.cluster.local:5984/_node/couchdb@couchdb-couchdb-0.couchdb-couchdb.couchdb.svc.cluster.local/_config/cors/credentials" -H "Content-Type: application/json" -d '"true"' --user "${username}:${password}"); do sleep 5; done && until (curl -s -X PUT "couchdb-couchdb-0.couchdb-couchdb.couchdb.svc.cluster.local:5984/_node/couchdb@couchdb-couchdb-0.couchdb-couchdb.couchdb.svc.cluster.local/_config/cors/origins" -H "Content-Type: application/json" -d '"app://obsidian.md,capacitor://couchdb-couchdb-0.couchdb-couchdb.couchdb.svc.cluster.local,http://couchdb-couchdb-0.couchdb-couchdb.couchdb.svc.cluster.local"' --user "${username}:${password}"); do sleep 5; done && echo "<-- Configuring CouchDB by REST APIs Done!"
+#            image: nicolaka/netshoot:latest
+#            env:
+#            - name: username
+#              valueFrom:
+#                secretKeyRef:
+#                  key: adminUsername
+#                  name: couchdb-couchdb
+#            - name: password
+#              valueFrom:
+#                secretKeyRef:
+#                  key: adminPassword
+#                  name: couchdb-couchdb
+#            name: configuration
+#            volumeMounts:
+#            - mountPath: /tmp/
+#              name: config
+#            - mountPath: /default.d
+#              name: config-storage

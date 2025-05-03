@@ -9,3 +9,5 @@ resources:
   - gateway-api
   - istio-system
   - istio-ingress
+  - gotify
+  - couchdb
