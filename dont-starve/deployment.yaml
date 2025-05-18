@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: dst
+  name: dst-deployment
+  namespace: dont-starve
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dst
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: dst
+    spec:
+      initContainers:
+        - name: take-dir-ownership
+          image: cm2network/steamcmd:root
+          command:
+            - chown
+            - -R
+            - steam:steam
+            - /home/steam/.klei
+          volumeMounts:
+            - name: dst-storage
+              mountPath: /home/steam/.klei
+      containers:
+        - image: masterexecuson/dont-starve-together-image:2025-05-20
+          name: dst
+          volumeMounts:
+            - name: dst-storage
+              mountPath: /home/steam/.klei
+            - name: cluster-token
+              mountPath: /.klei/DoNotStarveTogether/MyDediServer
+            - name: caves-volume
+              mountPath: /.klei/DoNotStarveTogether/MyDediServer/Caves
+            - name: master-volume
+              mountPath: /.klei/DoNotStarveTogether/MyDediServer/Master
+      volumes:
+        - name: caves-volume
+          configMap:
+            name: caves
+        - name: master-volume
+          configMap:
+            name: master
+        - name: cluster-token
+          secret:
+            secretName: cluster-token
+        - name: dst-storage
+          persistentVolumeClaim:
+            claimName: dst-claim
