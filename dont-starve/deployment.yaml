@@ -23,16 +23,16 @@ spec:
             - chown
             - -R
             - steam:steam
-            - /home/steam/.klei
+            - /home/steam/klei
           volumeMounts:
             - name: dst-storage
-              mountPath: /home/steam/.klei
+              mountPath: /home/steam/klei
       containers:
-        - image: masterexecuson/dont-starve-together-image:2025-05-20
+        - image: masterexecuson/dont-starve-together-image:2025-05-28
           name: dst
           volumeMounts:
             - name: dst-storage
-              mountPath: /home/steam/.klei
+              mountPath: /home/steam/klei
             - name: cluster-token
               mountPath: /.klei/DoNotStarveTogether/MyDediServer
             - name: caves-volume
